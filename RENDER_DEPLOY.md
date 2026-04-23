@@ -27,6 +27,7 @@
    - `MONGO_URI`
 
 7. Deploy the service.
+8. Do not manually set `PORT` in Render. Render provides it automatically.
 
 ### Option 2: Manual Web Service
 
@@ -43,7 +44,6 @@ If you do not want to use the blueprint:
 
 5. Add these environment variables:
 
-   - `PORT=3200`
    - `JWT_SECRET=your-secret`
    - `JWT_REFRESH_SECRET=your-refresh-secret`
    - `MONGO_URI=your-mongodb-uri`
@@ -61,8 +61,21 @@ Example response:
 ```json
 {
   "status": "ok",
-  "service": "forgefit-api"
+  "service": "forgefit-api",
+  "database": "connected"
 }
+```
+
+If `database` is `disconnected`, the app is running but MongoDB is not reachable yet.
+
+## Common Bad Gateway Fixes
+
+1. Remove any custom `PORT` variable from Render dashboard settings.
+2. In MongoDB Atlas Network Access, allow Render to connect.
+3. Make sure `MONGO_URI` includes a real database name, for example:
+
+```text
+mongodb+srv://username:password@cluster.mongodb.net/forgefit?retryWrites=true&w=majority
 ```
 
 ## After Deploy

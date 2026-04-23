@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import mongoose from 'mongoose';
 import authRoutes from './Routes/authRoutes.js';
 import userRoutes from './Routes/UserRoutes.js';
 import attendanceRoutes from './Routes/attendanceRoutes.js';
@@ -14,7 +15,6 @@ const PORT = ENV.PORT || 3200;
 
 app.use(cors());
 app.use(express.json());
-connectDB();
 
 app.get('/', (_req, res) => {
     res.status(200).json({
@@ -24,9 +24,17 @@ app.get('/', (_req, res) => {
 });
 
 app.get('/health', (_req, res) => {
+    const dbStateMap = {
+        0: 'disconnected',
+        1: 'connected',
+        2: 'connecting',
+        3: 'disconnecting',
+    };
+
     res.status(200).json({
         status: 'ok',
-        service: 'forgefit-api'
+        service: 'forgefit-api',
+        database: dbStateMap[mongoose.connection.readyState] || 'unknown'
     });
 });
 
@@ -40,3 +48,5 @@ app.use('/admin', adminRoutes);
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+connectDB();
