@@ -27,7 +27,7 @@ export const createPlan = async (req, res) => {
 
 export const assignPlanToUser = async (req, res) => {
   try {
-    const { user_id, plan_id } = req.body;
+    const { user_id, plan_id, startDate, endDate } = req.body;
     if (!user_id || !plan_id) {
       return res.status(400).json({ message: "user_id and plan_id are required" });
     }
@@ -43,10 +43,6 @@ export const assignPlanToUser = async (req, res) => {
     if (!plan) {
       return res.status(404).json({ message: "Plan not found" });
     }
-
-    const startDate = new Date();
-    const endDate = new Date(startDate);
-    endDate.setMonth(endDate.getMonth() + plan.duration_months);
 
     await PlanAssignment.updateMany(
       { user: user_id, status: "active" },
@@ -75,3 +71,17 @@ export const assignPlanToUser = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
+
+export const getUserPlans = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const assignments = await PlanAssignment.find({ user: userId })
+      .populate("plan").populate({ path: "user", select: "name email role status" })
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({ data: assignments });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
