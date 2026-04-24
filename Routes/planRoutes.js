@@ -9,7 +9,7 @@ import { requireAdmin, validToken } from "../Controllers/authController.js";
 
 const router = express.Router();
 
-router.use(validToken, requireAdmin);
+router.use(validToken);
 router.get("/", getPlans);
 router.post("/", createPlan);
 router.post("/assign", assignPlanToUser);
